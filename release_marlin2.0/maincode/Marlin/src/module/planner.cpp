@@ -153,6 +153,7 @@ float Planner::steps_to_mm[DISTINCT_AXES];      // (mm) Millimeters per step
 
 #if HAS_CLASSIC_JERK
   TERN(HAS_LINEAR_E_JERK, xyz_pos_t, xyze_pos_t) Planner::max_jerk;
+  TERN_(ANKER_MAKE_API, float Planner::retraction_e_jerk = DEFAULT_EJERK );
 #endif
 
 #if ENABLED(SD_ABORT_ON_ENDSTOP_HIT)
@@ -231,7 +232,7 @@ float Planner::previous_nominal_speed_sqr;
   #if ENABLED(ANKER_E_SMOOTH)
     uint32_t  Planner::extruder_K_steps_per_s2 = MAX_EXTRA_K_ACC*1312; // Smooth acceleration of K-value velocity(steps/s2)
   #endif
-  uint8_t Planner::LIN_ADV_version_change = LIN_ADV_VERSION_0; // = 1 version2 =0 default
+  uint8_t Planner::LIN_ADV_version_change = LIN_ADV_VERSION_3; // = 1 version2 =0 default
 #endif
 
 #if HAS_POSITION_FLOAT
@@ -2821,7 +2822,8 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     uint8_t limited = 0;
     TERN(HAS_LINEAR_E_JERK, LOOP_LINEAR_AXES, LOOP_LOGICAL_AXES)(i) {
       const float jerk = ABS(current_speed[i]),   // cs : Starting from zero, change in speed for this axis
-                  maxj = (max_jerk[i] + (i == X_AXIS || i == Y_AXIS ? extra_xyjerk : 0.0f)); // mj : The max jerk setting for this axis
+                  maxj = (i == E_AXIS) ? ((block->use_advance_lead == false) ? retraction_e_jerk : max_jerk[E_AXIS]) : max_jerk[i];
+
       if (jerk > maxj) {                          // cs > mj : New current speed too fast?
         if (limited) {                            // limited already?
           const float mjerk = nominal_speed * maxj; // ns*mj
@@ -3376,13 +3378,26 @@ void Planner::set_max_feedrate(const uint8_t axis, float inMaxFeedrateMMS) {
       constexpr xyze_float_t la_v1_max_jerk_edit   = LA_V1_MAX_JERK_EDIT_VALUES;
       limit_and_warn(inMaxJerkMMS, axis, PSTR("Jerk"), (planner.LIN_ADV_version_change >= LIN_ADV_VERSION_2) ? la_v1_max_jerk_edit : max_jerk_edit);
     #endif
-    //if ((planner.LIN_ADV_version_change <= LIN_ADV_VERSION_1) && (axis == E_AXIS || axis == Z_AXIS)) {
-    if ((planner.LIN_ADV_version_change <= LIN_ADV_VERSION_1) && (axis == Z_AXIS)) {  
-      return;
-    }
     max_jerk[axis] = inMaxJerkMMS;
   }
 
+  #if ENABLED(ANKER_MAKE_API)
+    /**
+     * Max E Jerk for retract_acceleration (units/sec^2)
+     */
+    void Planner::set_max_e_jerk_for_retract_acceleration(float inMaxJerkMMS) {
+      constexpr xyze_float_t max_jerk_edit = MAX_JERK_EDIT_VALUES;
+      
+      const float before = retraction_e_jerk;
+
+      LIMIT(inMaxJerkMMS, 0.1, max_jerk_edit[E_AXIS]);
+      if (before != inMaxJerkMMS) {
+        SERIAL_ECHOPGM(" Max E Jerk for retract_acceleration");
+        SERIAL_ECHOLNPAIR(" limited to ", inMaxJerkMMS);
+      }
+      retraction_e_jerk = inMaxJerkMMS;
+    }
+  #endif
 #endif
 
 #if HAS_WIRED_LCD

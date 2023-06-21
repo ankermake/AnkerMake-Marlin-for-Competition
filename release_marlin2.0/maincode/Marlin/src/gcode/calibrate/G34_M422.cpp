@@ -462,8 +462,9 @@ void GcodeSuite::G34() {
  #include "../../feature/anker/anker_align.h" 
    void GcodeSuite::G36()
    {
+    const float travel_acceleration = planner.settings.travel_acceleration;
     planner.settings.travel_acceleration =2500;
-    feedrate_mm_s==250; 
+
     if(parser.seen('L'))
     {
       anker_align.add_z1_value(parser.value_float());
@@ -496,6 +497,8 @@ void GcodeSuite::G34() {
     {
        anker_align.auto_align();
     }
+
+    planner.settings.travel_acceleration = travel_acceleration;
    }
 #endif
 

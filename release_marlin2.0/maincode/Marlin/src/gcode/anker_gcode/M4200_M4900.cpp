@@ -178,7 +178,7 @@ void GcodeSuite::M4899() {
             planner.settings.max_feedrate_mm_s[Y_AXIS] = feedrate[Y_AXIS];
             planner.settings.max_feedrate_mm_s[Z_AXIS] = feedrate[Z_AXIS];
             planner.settings.max_feedrate_mm_s[E_AXIS] = feedrate[E_AXIS];
-            const uint32_t max_accel[DISTINCT_AXES] = MAX_ACCEL_EDIT_VALUES;
+            const uint32_t max_accel[DISTINCT_AXES] = DEFAULT_MAX_ACCELERATION;
             planner.settings.max_acceleration_mm_per_s2[X_AXIS] = max_accel[X_AXIS];
             planner.settings.max_acceleration_mm_per_s2[Y_AXIS] = max_accel[Y_AXIS];
             planner.settings.max_acceleration_mm_per_s2[Z_AXIS] = max_accel[Z_AXIS];
@@ -210,7 +210,7 @@ void GcodeSuite::M4899() {
             planner.settings.max_feedrate_mm_s[Y_AXIS] = feedrate[Y_AXIS];
             planner.settings.max_feedrate_mm_s[Z_AXIS] = feedrate[Z_AXIS];
             planner.settings.max_feedrate_mm_s[E_AXIS] = feedrate[E_AXIS];
-            const uint32_t max_accel[DISTINCT_AXES] = LA_V1_MAX_ACCEL_EDIT_VALUES;
+            const uint32_t max_accel[DISTINCT_AXES] = LA_V1_DEFAULT_MAX_ACCELERATION;
             planner.settings.max_acceleration_mm_per_s2[X_AXIS] = max_accel[X_AXIS];
             planner.settings.max_acceleration_mm_per_s2[Y_AXIS] = max_accel[Y_AXIS];
             planner.settings.max_acceleration_mm_per_s2[Z_AXIS] = max_accel[Z_AXIS];
@@ -236,7 +236,7 @@ void GcodeSuite::M4899() {
             planner.settings.max_feedrate_mm_s[Y_AXIS] = feedrate[Y_AXIS];
             planner.settings.max_feedrate_mm_s[Z_AXIS] = feedrate[Z_AXIS];
             planner.settings.max_feedrate_mm_s[E_AXIS] = feedrate[E_AXIS];
-            const uint32_t max_accel[DISTINCT_AXES] = LA_V1_MAX_ACCEL_EDIT_VALUES;
+            const uint32_t max_accel[DISTINCT_AXES] = LA_V1_DEFAULT_MAX_ACCELERATION;
             planner.settings.max_acceleration_mm_per_s2[X_AXIS] = max_accel[X_AXIS];
             planner.settings.max_acceleration_mm_per_s2[Y_AXIS] = max_accel[Y_AXIS];
             planner.settings.max_acceleration_mm_per_s2[Z_AXIS] = max_accel[Z_AXIS];

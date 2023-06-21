@@ -119,9 +119,7 @@ void GcodeSuite::M203() {
  *    T = Travel (non printing) moves
  */
 void GcodeSuite::M204() {
-  const float default_accel   = (planner.LIN_ADV_version_change >= LIN_ADV_VERSION_2) ? LA_V1_DEFAULT_ACCELERATION         : DEFAULT_ACCELERATION;
-  const float default_retract = (planner.LIN_ADV_version_change >= LIN_ADV_VERSION_2) ? LA_V1_DEFAULT_RETRACT_ACCELERATION : DEFAULT_RETRACT_ACCELERATION;
-  const float default_travel  = (planner.LIN_ADV_version_change >= LIN_ADV_VERSION_2) ? LA_V1_DEFAULT_TRAVEL_ACCELERATION  : DEFAULT_TRAVEL_ACCELERATION;
+  const float default_accel   = (planner.LIN_ADV_version_change >= LIN_ADV_VERSION_2) ? LA_V1_ACCEL_EDIT_VALUES : ACCEL_EDIT_VALUES;
 
   if (!parser.seen("PRST")) {
     SERIAL_ECHOPAIR("Acceleration: P", planner.settings.acceleration);
@@ -140,10 +138,6 @@ void GcodeSuite::M204() {
          {
           planner.settings.travel_acceleration = planner.settings.acceleration = acc_temp;
          }
-         else
-         {
-          planner.settings.travel_acceleration = planner.settings.acceleration = default_accel;
-         }
       }
       if (parser.seenval('P'))
       {
@@ -152,33 +146,21 @@ void GcodeSuite::M204() {
          {
           planner.settings.acceleration = acc_temp;
          }
-         else
-         {
-          planner.settings.acceleration = default_accel; 
-         }
       }
       if (parser.seenval('R'))
       {
          acc_temp=parser.value_linear_units();
-         if(WITHIN(acc_temp, 0.1, default_retract))
+         if(WITHIN(acc_temp, 0.1, default_accel))
          {
           planner.settings.retract_acceleration = acc_temp;
-         }
-         else
-         {
-          planner.settings.retract_acceleration = default_retract; 
          }
       }
       if (parser.seenval('T'))
       {
          acc_temp=parser.value_linear_units();
-         if(WITHIN(acc_temp, 0.1, default_travel))
+         if(WITHIN(acc_temp, 0.1, default_accel))
          {
           planner.settings.travel_acceleration = acc_temp;
-         }
-         else
-         {
-          planner.settings.travel_acceleration = default_travel; 
          }
       }
     #else
@@ -201,6 +183,7 @@ void GcodeSuite::M204() {
  *    Z = Max Z Jerk (units/sec^2)
  *    E = Max E Jerk (units/sec^2)
  *    J = Junction Deviation (mm) (If not using CLASSIC_JERK)
+ *    R = Max E Jerk for retract_acceleration (units/sec^2)
  */
 void GcodeSuite::M205() {
   if (!parser.seen("BST" TERN_(HAS_JUNCTION_DEVIATION, "J") TERN_(HAS_CLASSIC_JERK, "XYZE"))) return;
@@ -234,6 +217,9 @@ void GcodeSuite::M205() {
       if (parser.seenval(AXIS5_NAME)) planner.set_max_jerk(J_AXIS, parser.value_linear_units()),
       if (parser.seenval(AXIS6_NAME)) planner.set_max_jerk(K_AXIS, parser.value_linear_units())
     );
+
+    TERN_(ANKER_MAKE_API, if (parser.seenval('R')) planner.set_max_e_jerk_for_retract_acceleration(parser.value_linear_units()));
+
     #if HAS_MESH && DISABLED(LIMITED_JERK_EDITING)
       if (seenZ && planner.max_jerk.z <= 0.1f)
         SERIAL_ECHOLNPGM("WARNING! Low Z Jerk may lead to unwanted pauses.");

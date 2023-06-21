@@ -441,6 +441,7 @@ class Planner {
     #if HAS_CLASSIC_JERK
       // (mm/s^2) M205 XYZ(E) - The largest speed change requiring no acceleration.
       static TERN(HAS_LINEAR_E_JERK, xyz_pos_t, xyze_pos_t) max_jerk;
+      TERN_(ANKER_MAKE_API, static float retraction_e_jerk);
     #endif
 
     #if HAS_LEVELING
@@ -562,6 +563,7 @@ class Planner {
     // For an axis set the Maximum Jerk (instant change) in mm/s
     #if HAS_CLASSIC_JERK
       static void set_max_jerk(const AxisEnum axis, float inMaxJerkMMS);
+      TERN_(ANKER_MAKE_API, static void set_max_e_jerk_for_retract_acceleration(float inMaxJerkMMS));
     #else
       static inline void set_max_jerk(const AxisEnum, const_float_t) {}
     #endif
