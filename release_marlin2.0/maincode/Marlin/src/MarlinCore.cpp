@@ -1775,6 +1775,9 @@ void setup() {
   uart_nozzle_init();
   oci_init();
 #endif
+
+  // Parameters for initializing mode 3 on power-up by default.
+  gcode.process_subcommands_now_P(PSTR("M4899 T3"));
 }
 
 /**

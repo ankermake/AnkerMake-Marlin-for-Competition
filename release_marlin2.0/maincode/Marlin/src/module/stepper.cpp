@@ -2408,8 +2408,8 @@ uint32_t Stepper::block_phase_isr() {
       acceleration_time = deceleration_time = 0;
 
       #if ENABLED(ADAPTIVE_STEP_SMOOTHING)
+      oversampling_factor = 0;                            // Assume no axis smoothing (via oversampling)
       if(planner.LIN_ADV_version_change >= LIN_ADV_VERSION_2){
-        oversampling_factor = 0;                            // Assume no axis smoothing (via oversampling)
         // Decide if axis smoothing is possible
         uint32_t max_rate = current_block->nominal_rate;    // Get the step event rate
         while (max_rate < MIN_STEP_ISR_FREQUENCY) {         // As long as more ISRs are possible...

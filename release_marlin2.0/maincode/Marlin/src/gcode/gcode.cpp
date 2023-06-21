@@ -35,6 +35,7 @@ GcodeSuite gcode;
 #include "parser.h"
 #include "queue.h"
 #include "../module/motion.h"
+#include "../module/planner.h"
 
 #if ENABLED(PRINTCOUNTER)
   #include "../module/printcounter.h"
@@ -405,7 +406,13 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
 
       #if HAS_LEVELING
         case 29:                                                  // G29: Bed leveling calibration
-          TERN(G29_RETRY_AND_RECOVER, G29_with_retry, G29)();
+          { 
+            //Use a fixed acceleration as the leveling parameter.
+            const float travel_acceleration = planner.settings.travel_acceleration;
+            planner.settings.travel_acceleration =2500;
+            TERN(G29_RETRY_AND_RECOVER, G29_with_retry, G29)();
+            planner.settings.travel_acceleration = travel_acceleration;
+          }
           break;
       #endif
 

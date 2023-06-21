@@ -254,10 +254,6 @@ public:
  *     There's no extra effect if you have a fixed Z probe.
  */
 G29_TYPE GcodeSuite::G29() { 
-  //-----------------------------------
-  planner.settings.travel_acceleration =2500;
-  feedrate_mm_s==250;
-  //-------------------------------------
   DEBUG_SECTION(log_G29, "G29", DEBUGGING(LEVELING));
   
   #if ENABLED(ANKER_NOZZLE_BOARD)

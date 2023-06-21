@@ -48,7 +48,7 @@
 /*******************************Functional API Configuration****************************/
 #if MACCHINE == MOTOR_5X_DVT
     #ifndef SHORT_BUILD_VERSION
-     #define SHORT_BUILD_VERSION            "V8111_V3.0.48"
+     #define SHORT_BUILD_VERSION            "V8111_V3.0.53"
     #endif
     #define ANKER_MAKE_API           1 //gcode
     #define ANKER_GCODE_CHECK        0
